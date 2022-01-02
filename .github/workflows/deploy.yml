@@ -1,0 +1,55 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+   
+env:
+  # Change these values if you have forked it for your own works
+  GIT_USERNAME: "Sushrut1101"
+  GIT_EMAIL: "guptasushrut@gmail.com"
+  Branch: "master"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Configure git and Store git Credentials
+        run: |
+          git config --global user.name $GIT_USERNAME
+          git config --global user.email $GIT_EMAIL
+          git config --global credential.helper store
+          echo "https://${GIT_USERNAME}:${{ secrets.GH_TOKEN }}@github.com" > ~/.git-credentials
+      
+      - name: Install Packages
+        run: |
+          sudo apt update
+          sudo apt install python3.9 python3-pip lzma cpio aria2 tmate neofetch speedtest-cli -y
+          sudo ln -sf /usr/bin/python3.9 /usr/bin/python3
+          sudo ln -sf /usr/bin/python3.9 /usr/bin/python
+          sudo ln -sf /usr/bin/pip3 /usr/bin/pip
+      - name: Clone the Atom-X-Bot Repo
+        run: |
+          git clone ${{ secrets.PRIVATE_REPO }} AtomXBot
+      
+      - name: Run the Bot
+        working-directory: AtomXBot
+        continue-on-error: true
+        timeout-minutes: 340
+        run: |
+          pip install -r requirements.txt
+          python3 -m AstrakoBot
+      - name: Loop
+        run: |
+          git clone https://github.com/${{ github.repository }} looper
+          cd looper
+          echo $(( RANDOM - RANDOM % RANDOM )) > loop.txt
+          git add loop.txt
+          git commit -m "Workflow: loop"
+          git push -u
