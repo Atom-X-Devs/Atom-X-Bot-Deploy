@@ -45,7 +45,14 @@ jobs:
         timeout-minutes: 340
         run: |
           pip install -r requirements.txt
-          python3 -m AstrakoBot
+          python3 -m AstrakoBot | tee deploy-logs.txt
+
+      - name: Upload Logs
+        uses: actions/upload-artifact@v2
+        with:
+          name: bot-deploy-logs
+          path: AtomXBot/deploy-logs.txt
+
       - name: Loop
         run: |
           git clone https://github.com/${{ github.repository }} looper
