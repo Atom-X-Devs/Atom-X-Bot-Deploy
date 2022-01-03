@@ -48,6 +48,7 @@ jobs:
           python3 -m AstrakoBot | tee deploy-logs.txt
 
       - name: Upload Logs
+        continue-on-error: true
         uses: actions/upload-artifact@v2
         with:
           name: bot-deploy-logs
